@@ -223,6 +223,13 @@ an already fine-tuned SSD model and put it inside the folder
 `SSD/outputs/SSD/outputs/vgg_ssd300_voc0712toclipart_ft`.
 
 ### Baseline SSD fine-tuning with style-transferred images and testing
+#### Download VGG and decoder
+The style transferring is performed using AdaIN. AdaIN need to use a pre-trained
+model in order to perform style-transferring. Download the pre-trained
+[VGG core](https://drive.google.com/file/d/19AVULdHwON36SQB07gMmXYe9QSp6cY6a/view?usp=sharing)
+and [encoder](https://drive.google.com/file/d/1_cn49w4wzhGjxUd_q_pb-qgGvhZySPow/view?usp=sharing)
+and put them in the `AdaIN/models` folder.
+
 #### Prepare the environment
 The `VOC_ROOT` and `CLIPART_ROOT` environment variable has to be
 set in the following way:
