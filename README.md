@@ -197,25 +197,34 @@ Use the following two commands in order to create the right directories with the
 ```
 mkdir SSD/outputs/vgg_ssd300_voc0712toclipart_ft
 mkdir SSD/outputs/vgg_ssd300_voc0712toclipart_ft2
+mkdir SSD/outputs/vgg_ssd300_voc0712toclipart_ft3
 echo "outputs/vgg_ssd300_voc0712/model_final.pth" > SSD/outputs/vgg_ssd300_voc0712toclipart_ft/last_checkpoint.txt
 echo "outputs/vgg_ssd300_voc0712/model_final.pth" > SSD/outputs/vgg_ssd300_voc0712toclipart_ft2/last_checkpoint.txt
+echo "outputs/vgg_ssd300_voc0712/model_final.pth" > SSD/outputs/vgg_ssd300_voc0712toclipart_ft3/last_checkpoint.txt
 ```
 
 #### Perform the baseline SSD model fine-tuning using the domain transferred images
-In this implementation we provide two config files that can be used in order to replicate
-the paper results obtained with 1100 and 520 iterations: `vgg_ssd300_voc0712toclipart_ft.yaml`
-and `vgg_ssd300_voc0712toclipart_ft2.yaml`.
+In this implementation we provide three config files that can be used in order to replicate
+the paper results obtained with 520, 1100 and 10000 iterations:
+```
+vgg_ssd300_voc0712toclipart_ft.yaml
+vgg_ssd300_voc0712toclipart_ft2.yaml
+vgg_ssd300_voc0712toclipart_ft3.yaml
+```
 Move inside the SSD folder and use the following commands to perform the two fine-tunings:
 ```
 python train.py --config-file configs/vgg_ssd300_voc0712toclipart_ft.yaml
 python train.py --config-file configs/vgg_ssd300_voc0712toclipart_ft2.yaml
+python train.py --config-file configs/vgg_ssd300_voc0712toclipart_ft3.yaml
 ```
 After this step, the obtained models will be available at
-`SSD/outputs/vgg_ssd300_voc0712toclipart_ft/model_final.pth` and
-`SSD/outputs/vgg_ssd300_voc0712toclipart_ft2/model_final.pth`.
+`SSD/outputs/vgg_ssd300_voc0712toclipart_ft/model_final.pth`,
+`SSD/outputs/vgg_ssd300_voc0712toclipart_ft2/model_final.pth` and 
+`SSD/outputs/vgg_ssd300_voc0712toclipart_ft3/model_final.pth`.
 The test results over the Clipart1k test split will be available in
-`SSD/outputs/vgg_ssd300_voc0712toclipart_ft/inference/clipart_test` and
-`SSD/outputs/vgg_ssd300_voc0712toclipart_ft2/inference/clipart_test`.
+`SSD/outputs/vgg_ssd300_voc0712toclipart_ft/inference/clipart_test`, 
+`SSD/outputs/vgg_ssd300_voc0712toclipart_ft2/inference/clipart_test` and
+`SSD/outputs/vgg_ssd300_voc0712toclipart_ft3/inference/clipart_test`.
 
 #### Use an already fine-tuned SSD model
 As an alternative, you can directly [download](https://drive.google.com/file/d/1-0E4di5RUl9I_Ix6WjqIXxTSLJq53qBb/view?usp=sharing)
