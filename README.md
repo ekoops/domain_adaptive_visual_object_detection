@@ -1,17 +1,13 @@
 # Domain Adaptive Visual Object Detection
 
-This is the reference repository for the [paper](link paper)
+This is the reference repository for the [paper](domain_adaptive_visual_object_detection.pdf)
 
-## Requirements
-- DA IMLEMENTARE
-- Python 3.5+
-- Chainer 3.0+
-- ChainerCV 0.8
-- Cupy 2.0+
-- OpenCV 3+
-- Matplotlib
-
-Please install all the libraries using `pip install -r requirements.txt`.
+## Colab notebook
+The Colab notebook used in this work is available [here](progettoML.ipynb).
+Notice that, in order to replicate this work on the Colab platform,
+the instructions available in [Usage](#usage) regarding folders and symlinks creation
+or environment variables definition, has to be adapted
+with appropriate actions on colab notebook and on the connected drive.
 
 ## Usage
 
