@@ -11,7 +11,8 @@ The Clipart1k datasets contains both the train and the test split.
 # Setup
 
 ## Download original datasets
-
+Before executing the following command, `curl`, `rsync`, `tar` and `unzip` tools have to be available.
+Execute the following command to download all the necessary datasets.
 ```
 bash prepare.sh
 ```
