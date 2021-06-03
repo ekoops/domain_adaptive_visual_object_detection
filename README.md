@@ -7,7 +7,7 @@ The Colab notebook used in this work is available [here](progettoML.ipynb).
 Notice that, in order to replicate this work on the Colab platform,
 the instructions available in [Usage](#usage) regarding folders and symlinks creation
 or environment variables definition, has to be adapted
-with appropriate actions on colab notebook and on the connected drive.
+with appropriate actions on Colab notebook and on the connected Google Drive.
 
 ## Usage
 
@@ -53,7 +53,7 @@ export VOC_ROOT=/absolute/path/to/this/repo/datasets/VOC
 Please note that it is necessary to download in advance the datasets.
 
 #### Perform the baseline SSD model training
-Move inside the SSD folder and use the following command to train a
+Move inside the `SSD` folder and use the following command to train a
 baseline SSD model using the configurations in `SSD/configs/vgg_ssd300_voc0712.yaml`:
 ```
 python train.py --config-file configs/vgg_ssd300_voc0712.yaml
@@ -62,7 +62,11 @@ After this step, the obtained model will be available at `SSD/outputs/vgg_ssd300
 
 #### Use a pre-trained baseline SSD model
 As an alternative, you can directly [download](https://drive.google.com/file/d/1-RiuI0qsv6ohVtGMGiUhApMWszpzR7mz/view?usp=sharing) a pre-trained baseline
-SSD model and put it inside the folder `SSD/outputs/vgg_ssd300_voc0712`.
+SSD model and put it inside the folder `SSD/outputs/vgg_ssd300_voc0712`. It is necessary also execute
+the following command inside the `SSD` folder:
+```
+echo "outputs/vgg_ssd300_voc0712/model_final.pth" > outputs/vgg_ssd300_voc0712/last_checkpoint.txt
+```
 
 
 ### Test the baseline SSD model
@@ -89,16 +93,18 @@ After this step, the results will be available inside the folder
 
 ### Train CycleGAN
 #### Prepare the environment
-CycleGAN has to infer a mapping function from the source domain represented by
-the VOC samples to the target domain represented by the Clipart1k samples.
+CycleGAN has to infer a mapping function from the source domain (represented by
+the VOC samples) to the target domain (represented by the Clipart1k samples).
 The source domain dataset will be the merge of the Pascal VOC 2007 and 2012 trainval splits
 whereas the target domain dataset will be the Clipart1k train split.
 In order to allow this setting, it is necessary to let the CycleGAN implementation know which
-are the folder containing the Pascal VOC dataset and the Clipart1k dataset. This can be done by
-creating symlinks to the  `datasets/VOC` and `datasets/CLIPART` inside the `CycleGAN/inputs` folder:
+are the folders containing the Pascal VOC dataset and the Clipart1k dataset. This can be done by moving
+in the root repository directory and creating symlinks to the `datasets/VOC` and
+`datasets/CLIPART` inside the `CycleGAN/inputs` folder:
 ```
-ln -s datasets/VOC CycleGAN/inputs/trainA
-ln -s datasets/CLIPART CycleGAN/inputs/trainB
+mkdir CycleGAN/inputs
+ln -s ../../datasets/VOC CycleGAN/inputs/trainA
+ln -s ../../datasets/CLIPART CycleGAN/inputs/trainB
 ```
 Moreover, it is necessary to let the CycleGAN implementation know which are the right merges/splits
 that has to be used in the training by defining the `trainA_FILTER_FILE` and `trainB_FILTER_FILE` environment variables:
@@ -110,16 +116,12 @@ export trainB_FILTER_FILE=/absolute/path/to/this/repo/datasets/CLIPART/clipart/I
 #### Perform the CycleGAN training
 Move inside the `CycleGAN` folder and use the following command to train CycleGAN:
 ```
-python train.py --name VOC0712_ClipArt1k --dataroot inputs --display_id -1
-  --verbose --save_latest_freq 500000 --save_epoch_freq 1
-  --n_epochs 10 --n_epochs_decay 10 --lr 0.00001
+python train.py --name VOC0712_ClipArt1k --dataroot inputs --display_id -1 --verbose --save_latest_freq 500000 --save_epoch_freq 1 --n_epochs 10 --n_epochs_decay 10 --lr 0.00001
 ```
 Notice that, the above setting will save the trained model every 1 epoch.
 In order to stop and restart the CycleGAN training, a command like the following has to be issued:
 ```
-python train.py --name VOC0712_ClipArt1k --dataroot inputs --display_id -1
-  --verbose --save_latest_freq 500000 --save_epoch_freq 1 --epoch_count 5
-  --n_epochs 10 --n_epochs_decay 10 --lr 0.00001 --continue_train
+python train.py --name VOC0712_ClipArt1k --dataroot inputs --display_id -1 --verbose --save_latest_freq 500000 --save_epoch_freq 1 --epoch_count 5 --n_epochs 10 --n_epochs_decay 10 --lr 0.00001 --continue_train
 ```
 The above command will let the training restart from the epoch 5.
 Please refer to the [CycleGAN implementation](https://github.com/ekoops/pytorch-CycleGAN-and-pix2pix)
@@ -133,12 +135,13 @@ a pre-trained CycleGAN model. The zip content has to be put inside the folder `C
 ### DT step
 #### Prepare the environment
 In the DT step the Pascal VOC2007 and Pascal VOC2012 trainval split are domain-transferred to the
-ClipArt1k domain.
+Clipart1k domain.
 In order to allow this setting, it is necessary to let the CycleGAN implementation know which
 is the folder containing the Pascal VOC datasets that has to be used in the test phase.
-This can be done by creating symlinks to the `datasets/VOC` inside the `CycleGAN/inputs` folder:
+This can be done by moving in the root repository directory and creating symlinks
+to the `datasets/VOC` inside the `CycleGAN/inputs` folder:
 ```
-ln -s datasets/VOC CycleGAN/inputs/testA
+ln -s ../../datasets/VOC CycleGAN/inputs/testA
 ```
 Moreover, it is necessary to let the CycleGAN implementation know which are the right merge
 that has to be domain-transferred by defining the `testA_FILTER_FILE` environment variable:
@@ -148,14 +151,13 @@ export testA_FILTER_FILE=/absolute/path/to/this/repo/datasets/VOC_trainval_merge
 Finally, in order to perform the transferring only in one-verse, an alias for the trained model
 has to be created:
 ```
-ln -s CycleGAN/checkpoints/VOC0712_ClipArt1k/latest_net_G_A.pth CycleGAN/checkpoints/VOC0712_ClipArt1k/latest_net_G.pth
+ln -s latest_net_G_A.pth CycleGAN/checkpoints/VOC0712_ClipArt1k/latest_net_G.pth
 ```
 
 #### Perform the DT step
 Move inside the `CycleGAN` folder and use the following command to perform the DT step:
 ```
-python test.py --name VOC0712_ClipArt1k --model test --dataroot inputs/testA
-  --preprocess none --verbose --no_dropout --num_test 16551 --results_dir ../datasets/ --no_real
+python test.py --name VOC0712_ClipArt1k --model test --dataroot inputs/testA --preprocess none --verbose --no_dropout --num_test 16551 --results_dir ../datasets/ --no_real
 ```
 After the completion, all the transferred images will be stored in `datasets/VOC0712_ClipArt1k`
 
@@ -169,27 +171,29 @@ export VOC_ROOT=/absolute/path/to/this/repo/datasets/VOC0712_ClipArt1k
 export CLIPART_ROOT=/absolute/path/to/this/repo/datasets/CLIPART
 ```
 #### Preparing the domain-transferred images
-CycleGAN produces in the DT step a folder `datasets/VOC0712_ClipArt1k` with a similar to the `datasets/VOC` one.
-However, `datasets/VOC0712_ClipArt1k` does not contain the annotation needed for the SSD fine-tuning.
-In order to provide valid annotations, it is sufficient to reuse the same annotations of the
-`datasets/VOC/VOC2007` and `datasets/VOC/VOC2012`folders by creating the following symbolic links:
+CycleGAN produces in the DT step a folder `datasets/VOC0712_ClipArt1k` with a structure similar
+to the `datasets/VOC` one.  However, `datasets/VOC0712_ClipArt1k` does not contain the annotations
+needed for the SSD fine-tuning. In order to provide valid annotations, it is sufficient to reuse
+the same annotations of the `datasets/VOC/VOC2007` and `datasets/VOC/VOC2012`folders moving in the
+repository root folder and creating the following symbolic links:
 
 ```
-ln -s datasets/VOC/VOC2007/SegmentationObject datasets/VOC0712_ClipArt1k/VOC2007/SegmentationObject
-ln -s datasets/VOC/VOC2007/SegmentationClass datasets/VOC0712_ClipArt1k/VOC2007/SegmentationClass
-ln -s datasets/VOC/VOC2007/ImageSets datasets/VOC0712_ClipArt1k/VOC2007/ImageSets
-ln -s datasets/VOC/VOC2007/Annotations datasets/VOC0712_ClipArt1k/VOC2007/Annotations
+ln -s ../../VOC/VOC2007/SegmentationObject datasets/VOC0712_ClipArt1k/VOC2007/SegmentationObject
+ln -s ../../VOC/VOC2007/SegmentationClass datasets/VOC0712_ClipArt1k/VOC2007/SegmentationClass
+ln -s ../../VOC/VOC2007/ImageSets datasets/VOC0712_ClipArt1k/VOC2007/ImageSets
+ln -s ../../VOC/VOC2007/Annotations datasets/VOC0712_ClipArt1k/VOC2007/Annotations
 
-ln -s datasets/VOC/VOC2012/SegmentationObject datasets/VOC0712_ClipArt1k/VOC2012/SegmentationObject
-ln -s datasets/VOC/VOC2012/SegmentationClass datasets/VOC0712_ClipArt1k/VOC2012/SegmentationClass
-ln -s datasets/VOC/VOC2012/ImageSets datasets/VOC0712_ClipArt1k/VOC2012/ImageSets
-ln -s datasets/VOC/VOC2012/Annotations datasets/VOC0712_ClipArt1k/VOC2012/Annotations
+ln -s ../../VOC/VOC2012/SegmentationObject datasets/VOC0712_ClipArt1k/VOC2012/SegmentationObject
+ln -s ../../VOC/VOC2012/SegmentationClass datasets/VOC0712_ClipArt1k/VOC2012/SegmentationClass
+ln -s ../../VOC/VOC2012/ImageSets datasets/VOC0712_ClipArt1k/VOC2012/ImageSets
+ln -s ../../VOC/VOC2012/Annotations datasets/VOC0712_ClipArt1k/VOC2012/Annotations
 ```
 
 #### Prepare the baseline SSD model for the fine-tuning
 In order to allow the loading of the baseline SSD model for the fine-tuning,
 the SSD implementation must locate the correct model `SSD/outputs/vgg_ssd300_voc0712/model_final.pth`.
-Use the following two commands in order to create the right directories with the proper loading files:
+Move to the root repository folder and use the following two commands in order to
+create the right directories with the proper loading files:
 ```
 mkdir SSD/outputs/vgg_ssd300_voc0712toclipart_ft
 mkdir SSD/outputs/vgg_ssd300_voc0712toclipart_ft2
@@ -207,7 +211,7 @@ vgg_ssd300_voc0712toclipart_ft.yaml
 vgg_ssd300_voc0712toclipart_ft2.yaml
 vgg_ssd300_voc0712toclipart_ft3.yaml
 ```
-Move inside the SSD folder and use the following commands to perform the two fine-tunings:
+Move inside the `SSD` folder and use the following commands to perform the three finetunings:
 ```
 python train.py --config-file configs/vgg_ssd300_voc0712toclipart_ft.yaml
 python train.py --config-file configs/vgg_ssd300_voc0712toclipart_ft2.yaml
@@ -229,14 +233,16 @@ an already fine-tuned SSD model and put it inside the folder
 
 ### Baseline SSD fine-tuning with style-transferred images and testing
 #### Download VGG and decoder
-The style transferring is performed using AdaIN. AdaIN need to use a pre-trained
+The style transferring is performed using style transfer network based on AdaIN.
+
+AdaIN need to use a pre-trained
 model in order to perform style-transferring. Download the pre-trained
 [VGG core](https://drive.google.com/file/d/19AVULdHwON36SQB07gMmXYe9QSp6cY6a/view?usp=sharing)
-and [encoder](https://drive.google.com/file/d/1_cn49w4wzhGjxUd_q_pb-qgGvhZySPow/view?usp=sharing)
-and put them in the `AdaIN/models` folder.
+and [decoder](https://drive.google.com/file/d/1_cn49w4wzhGjxUd_q_pb-qgGvhZySPow/view?usp=sharing)
+and put them in the `AdaIN/models` folder after creating it.
 
 #### Prepare the environment
-The `VOC_ROOT` and `CLIPART_ROOT` environment variable has to be
+The `VOC_ROOT` and `CLIPART_ROOT` environment variables have to be
 set in the following way:
 ```
 export VOC_ROOT=/absolute/path/to/this/repo/datasets/VOC
@@ -244,13 +250,13 @@ export CLIPART_ROOT=/absolute/path/to/this/repo/datasets/CLIPART
 ```
 Moreover, the following symbolic link has to be created:
 ```
-ln -s AdaIN SSD/AdaIN
+ln -s ../AdaIN SSD/AdaIN
 ```
 
 #### Prepare the baseline SSD model for the fine-tuning
 In order to allow the loading of the baseline SSD model for the fine-tuning,
 the SSD implementation must locate the correct model `SSD/outputs/vgg_ssd300_voc0712/model_final.pth`.
-Use the following two commands in order to create the right directories with the proper loading files:
+Use the following commands in order to create the right directories with the proper loading files:
 ```
 mkdir SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft
 mkdir SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft2
@@ -276,15 +282,15 @@ vgg_ssd300_voc0712_AdaINst_ft5
 ```
 The above configuration files uses different combination of `SOLVER.MAX_ITER`,
 `ADAIN.LOADER.TRANSFER_RATIO` and `ADAIN.MODEL.ALPHA` parameters. 
-Move inside the SSD folder and use the following commands to perform the fine-tunings:
+Move inside the `SSD` folder and use the following commands to perform the finetunings:
 ```
 python train.py --config-file configs/vgg_ssd300_voc0712_AdaINst_ft.yaml --enable_style_transfer
-python train.py --config-file configs/vgg_ssd300_voc0712_AdaINst2_ft.yaml --enable_style_transfer
-python train.py --config-file configs/vgg_ssd300_voc0712_AdaINst3_ft.yaml --enable_style_transfer
-python train.py --config-file configs/vgg_ssd300_voc0712_AdaINst4_ft.yaml --enable_style_transfer
-python train.py --config-file configs/vgg_ssd300_voc0712_AdaINst5_ft.yaml --enable_style_transfer
+python train.py --config-file configs/vgg_ssd300_voc0712_AdaINst_ft2.yaml --enable_style_transfer
+python train.py --config-file configs/vgg_ssd300_voc0712_AdaINst_ft3.yaml --enable_style_transfer
+python train.py --config-file configs/vgg_ssd300_voc0712_AdaINst_ft4.yaml --enable_style_transfer
+python train.py --config-file configs/vgg_ssd300_voc0712_AdaINst_ft5.yaml --enable_style_transfer
 ```
-After this step, the obtained models will be available at
+After these steps, the obtained models will be available at
 ```
 SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft/model_final.pth
 SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft2/model_final.pth
@@ -292,7 +298,7 @@ SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft3/model_final.pth
 SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft4/model_final.pth
 SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft5/model_final.pth
 ```
-The test results over the Clipart1k test split will be available in
+The tests results over the Clipart1k test split will be available in
 ```
 SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft/inference/clipart_test
 SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft2/inference/clipart_test
