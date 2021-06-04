@@ -6,32 +6,32 @@ This is the reference repository for the [paper](domain_adaptive_visual_object_d
 The Colab notebook used in this work is available [here](progettoML.ipynb).
 Notice that, in order to replicate this work on the Colab platform,
 the instructions available in [Usage](#usage) regarding folders and symlinks creation
-or environment variables definition, has to be adapted
+or environment variables definition, have to be adapted
 with appropriate actions on Colab notebook and on the connected Google Drive.
 
 ## Usage
 
 ### Download datasets
 Please go to `datasets` directory and follow the instructions. After you have
-done the Pascal VOC datasets and the Clipart1k dataset will be available
+done, the Pascal VOC datasets and the Clipart1k dataset will be available
 in `datasets/VOC` and `datasets/CLIPART`
 
 ### Download SSD implementation
-The following command will download our customize SSD PyTorch implementation based
+The following command will download our custom SSD PyTorch implementation based
 on [lufficc/SSD](https://github.com/lufficc/SSD)
 ```
 bash download_SSD.sh
 ```
 
 ### Download CycleGAN implementation
-The following command will download our customize CycleGAN PyTorch implementation based
+The following command will download our custom CycleGAN PyTorch implementation based
 on [junyanz/pytorch-CycleGAN-and-pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix)
 ```
 bash download_CycleGAN.sh
 ```
 
 ### Download AdaIN implementation
-The following command will download our customize AdaIN PyTorch implementation based
+The following command will download our custom AdaIN PyTorch implementation based
 on [naoto0804/pytorch-AdaIN](https://github.com/naoto0804/pytorch-AdaIN)
 ```
 bash download_AdaIN.sh
@@ -62,7 +62,7 @@ After this step, the obtained model will be available at `SSD/outputs/vgg_ssd300
 
 #### Use a pre-trained baseline SSD model
 As an alternative, you can directly [download](https://drive.google.com/file/d/1-RiuI0qsv6ohVtGMGiUhApMWszpzR7mz/view?usp=sharing) a pre-trained baseline
-SSD model and put it inside the folder `SSD/outputs/vgg_ssd300_voc0712`. It is necessary also execute
+SSD model and put it inside the folder `SSD/outputs/vgg_ssd300_voc0712`. It is necessary also to execute
 the following command inside the `SSD` folder:
 ```
 echo "outputs/vgg_ssd300_voc0712/model_final.pth" > outputs/vgg_ssd300_voc0712/last_checkpoint.txt
@@ -134,7 +134,7 @@ a pre-trained CycleGAN model. The zip content has to be put inside the folder `C
 
 ### DT step
 #### Prepare the environment
-In the DT step the Pascal VOC2007 and Pascal VOC2012 trainval split are domain-transferred to the
+In the DT step, the Pascal VOC2007 and Pascal VOC2012 trainval split are domain-transferred to the
 Clipart1k domain.
 In order to allow this setting, it is necessary to let the CycleGAN implementation know which
 is the folder containing the Pascal VOC datasets that has to be used in the test phase.
@@ -148,7 +148,7 @@ that has to be domain-transferred by defining the `testA_FILTER_FILE` environmen
 ```
 export testA_FILTER_FILE=/absolute/path/to/this/repo/datasets/VOC_trainval_merge.txt
 ```
-Finally, in order to perform the transferring only in one-verse, an alias for the trained model
+Finally, in order to perform the transfer only in one-verse, an alias for the trained model
 has to be created:
 ```
 ln -s latest_net_G_A.pth CycleGAN/checkpoints/VOC0712_ClipArt1k/latest_net_G.pth
@@ -170,12 +170,12 @@ the environment variables has to be set as follows:
 export VOC_ROOT=/absolute/path/to/this/repo/datasets/VOC0712_ClipArt1k
 export CLIPART_ROOT=/absolute/path/to/this/repo/datasets/CLIPART
 ```
-#### Preparing the domain-transferred images
+#### Prepare the domain-transferred images
 CycleGAN produces in the DT step a folder `datasets/VOC0712_ClipArt1k` with a structure similar
 to the `datasets/VOC` one.  However, `datasets/VOC0712_ClipArt1k` does not contain the annotations
 needed for the SSD fine-tuning. In order to provide valid annotations, it is sufficient to reuse
-the same annotations of the `datasets/VOC/VOC2007` and `datasets/VOC/VOC2012`folders moving in the
-repository root folder and creating the following symbolic links:
+the same annotations of the `datasets/VOC/VOC2007` and `datasets/VOC/VOC2012`folders. Move in the
+repository root folder and create the following symbolic links:
 
 ```
 ln -s ../../VOC/VOC2007/SegmentationObject datasets/VOC0712_ClipArt1k/VOC2007/SegmentationObject
@@ -211,16 +211,18 @@ vgg_ssd300_voc0712toclipart_ft.yaml
 vgg_ssd300_voc0712toclipart_ft2.yaml
 vgg_ssd300_voc0712toclipart_ft3.yaml
 ```
-Move inside the `SSD` folder and use the following commands to perform the three finetunings:
+Move inside the `SSD` folder and use the following commands to perform the three fine-tunings:
 ```
 python train.py --config-file configs/vgg_ssd300_voc0712toclipart_ft.yaml
 python train.py --config-file configs/vgg_ssd300_voc0712toclipart_ft2.yaml
 python train.py --config-file configs/vgg_ssd300_voc0712toclipart_ft3.yaml
 ```
 After this step, the obtained models will be available at
-`SSD/outputs/vgg_ssd300_voc0712toclipart_ft/model_final.pth`,
-`SSD/outputs/vgg_ssd300_voc0712toclipart_ft2/model_final.pth` and 
-`SSD/outputs/vgg_ssd300_voc0712toclipart_ft3/model_final.pth`.
+```
+SSD/outputs/vgg_ssd300_voc0712toclipart_ft/model_final.pth
+SSD/outputs/vgg_ssd300_voc0712toclipart_ft2/model_final.pth
+SSD/outputs/vgg_ssd300_voc0712toclipart_ft3/model_final.pth
+```
 The test results over the Clipart1k test split will be available in
 `SSD/outputs/vgg_ssd300_voc0712toclipart_ft/inference/clipart_test`, 
 `SSD/outputs/vgg_ssd300_voc0712toclipart_ft2/inference/clipart_test` and
@@ -229,17 +231,19 @@ The test results over the Clipart1k test split will be available in
 #### Use an already fine-tuned SSD model
 As an alternative, you can directly [download](https://drive.google.com/file/d/1-0E4di5RUl9I_Ix6WjqIXxTSLJq53qBb/view?usp=sharing)
 an already fine-tuned SSD model and put it inside the folder
-`SSD/outputs/SSD/outputs/vgg_ssd300_voc0712toclipart_ft`.
+`SSD/outputs/SSD/outputs/vgg_ssd300_voc0712toclipart_ft`. It is necessary also execute the following
+command inside the `SSD` folder:
+```
+echo "outputs/vgg_ssd300_voc0712/model_final.pth" > outputs/vgg_ssd300_voc0712toclipart_ft/last_checkpoint.txt
+```
 
 ### Baseline SSD fine-tuning with style-transferred images and testing
 #### Download VGG and decoder
-The style transferring is performed using style transfer network based on AdaIN.
-
-AdaIN need to use a pre-trained
-model in order to perform style-transferring. Download the pre-trained
+The style transfer is performed using a style transfer network based on AdaIN. AdaIN need to use a pre-trained
+model in order to perform style-transfer. Download the pre-trained
 [VGG core](https://drive.google.com/file/d/19AVULdHwON36SQB07gMmXYe9QSp6cY6a/view?usp=sharing)
-and [decoder](https://drive.google.com/file/d/1_cn49w4wzhGjxUd_q_pb-qgGvhZySPow/view?usp=sharing)
-and put them in the `AdaIN/models` folder after creating it.
+and [decoder](https://drive.google.com/file/d/1_cn49w4wzhGjxUd_q_pb-qgGvhZySPow/view?usp=sharing),
+create the folder `AdaIN/models` and put the two downloaded file inside it.
 
 #### Prepare the environment
 The `VOC_ROOT` and `CLIPART_ROOT` environment variables have to be
@@ -256,7 +260,7 @@ ln -s ../AdaIN SSD/AdaIN
 #### Prepare the baseline SSD model for the fine-tuning
 In order to allow the loading of the baseline SSD model for the fine-tuning,
 the SSD implementation must locate the correct model `SSD/outputs/vgg_ssd300_voc0712/model_final.pth`.
-Use the following commands in order to create the right directories with the proper loading files:
+Use the following commands in order to create the right folders with the proper loading files:
 ```
 mkdir SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft
 mkdir SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft2
@@ -305,4 +309,13 @@ SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft2/inference/clipart_test
 SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft3/inference/clipart_test
 SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft4/inference/clipart_test
 SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft5/inference/clipart_test
+```
+
+#### Use an already fine-tuned SSD model
+We provide an already fine-tuned SSD model for the configuration `configs/vgg_ssd300_voc0712_AdaINst_ft.yaml`.
+You can you can directly [download](https://drive.google.com/file/d/1-gPu_UaVX_zDdM5QnGGL629xmYO-cKtx/view?usp=sharing) it and put it inside the folder
+`SSD/outputs/SSD/outputs/vgg_ssd300_voc0712_AdaINst_ft`. It is necessary also execute the following
+command inside the `SSD` folder:
+```
+echo "outputs/vgg_ssd300_voc0712/model_final.pth" > outputs/vgg_ssd300_voc0712_AdaINst_ft/last_checkpoint.txt
 ```
